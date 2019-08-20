@@ -16,11 +16,11 @@ protocol SelectionViewDataSource: AnyObject {
     
     func indicatorColorOfSelectionButtons(selectionView: SelectionView) -> UIColor
     
-    func titleColorOfSelectionButtons(selectionView: SelectionView) -> UIColor
+    func titleColorOfSelectionButtons(selectionView: SelectionView, index: Int) -> UIColor
     
-    func backgroundColorOfSelectionButtons(selectionView: SelectionView) -> UIColor
+    func backgroundColorOfSelectionButtons(selectionView: SelectionView, index: Int) -> UIColor
     
-    func fontOfSelectionButtons(selectionView: SelectionView) -> UIFont
+    func fontOfSelectionButtons(selectionView: SelectionView, index: Int) -> UIFont
     
 }
 
@@ -34,15 +34,15 @@ extension SelectionViewDataSource {
         return .white
     }
     
-    func titleColorOfSelectionButtons(selectionView: SelectionView) -> UIColor {
+    func titleColorOfSelectionButtons(selectionView: SelectionView, index: Int) -> UIColor {
         return .white
     }
     
-    func backgroundColorOfSelectionButtons(selectionView: SelectionView) -> UIColor {
+    func backgroundColorOfSelectionButtons(selectionView: SelectionView, index: Int) -> UIColor {
         return .black
     }
     
-    func fontOfSelectionButtons(selectionView: SelectionView) -> UIFont {
+    func fontOfSelectionButtons(selectionView: SelectionView, index: Int) -> UIFont {
         return .systemFont(ofSize: 18)
     }
     
@@ -140,11 +140,11 @@ class SelectionView: UIView {
             
             button.setTitle(dataSource.titleOfRowAt(selectionView: self, index: index), for: .normal)
             
-            button.titleLabel?.font = dataSource.fontOfSelectionButtons(selectionView: self)
+            button.titleLabel?.font = dataSource.fontOfSelectionButtons(selectionView: self, index: index)
             
-            button.setTitleColor(dataSource.titleColorOfSelectionButtons(selectionView: self), for: .normal)
+            button.setTitleColor(dataSource.titleColorOfSelectionButtons(selectionView: self, index: index), for: .normal)
             
-            button.backgroundColor = dataSource.backgroundColorOfSelectionButtons(selectionView: self)
+            button.backgroundColor = dataSource.backgroundColorOfSelectionButtons(selectionView: self, index: index)
             
             button.addTarget(self, action: #selector(updataIndicatorPosition(_:)), for: .touchUpInside)
             
@@ -154,13 +154,24 @@ class SelectionView: UIView {
         indicatorContainerView.addSubview(indicatorView)
     }
     
-    func resetIndicatorPosition() {
+    func reloadData() {
         
-        currentIndex = 0
+        buttonStackView.subviews.forEach { $0.removeFromSuperview() }
+        
+        indicatorView.removeFromSuperview()
+        
+        setupButton()
+        
+        resetIndicatorPosition()
+    }
+    
+    func resetIndicatorPosition() {
         
         buttonStackView.layoutIfNeeded()
         
         if buttonStackView.subviews.count > 0 {
+            
+            currentIndex = 0
             
             guard let firstView = buttonStackView.subviews.first,
                 let btn = firstView as? UIButton,
@@ -177,17 +188,6 @@ class SelectionView: UIView {
             delegate.didSelectButton?(selectionView: self, index: 0)
         }
         
-    }
-    
-    func reloadData() {
-        
-        buttonStackView.subviews.forEach { $0.removeFromSuperview() }
-        
-        indicatorView.removeFromSuperview()
-        
-        setupButton()
-        
-        resetIndicatorPosition()
     }
     
     @objc func updataIndicatorPosition(_ button: UIButton) {
