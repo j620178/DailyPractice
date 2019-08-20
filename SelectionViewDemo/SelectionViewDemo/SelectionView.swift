@@ -9,12 +9,19 @@
 import UIKit
 
 protocol SelectionViewDataSource: NSObject {
+    
     func numberOfSelectionButtons(selectionView: SelectionView) -> Int
+    
     func titleOfRowAt(selectionView: SelectionView, index: Int) -> String
+    
     func indicatorColorOfSelectionButtons(selectionView: SelectionView) -> UIColor
+    
     func titleColorOfSelectionButtons(selectionView: SelectionView) -> UIColor
+    
     func backgroundColorOfSelectionButtons(selectionView: SelectionView) -> UIColor
+    
     func fontOfSelectionButtons(selectionView: SelectionView) -> UIFont
+    
 }
 
 extension SelectionViewDataSource {
@@ -42,9 +49,11 @@ extension SelectionViewDataSource {
 }
 
 @objc protocol SelectionViewDelegate {
+    
     @objc optional func didSelectButton(selectionView: SelectionView, index: Int)
     
     @objc optional func shouldSelectButton(selectionView: SelectionView, index: Int) -> Bool
+    
 }
 
 class SelectionView: UIView {
@@ -67,14 +76,18 @@ class SelectionView: UIView {
     
     weak var dataSource: SelectionViewDataSource? {
         didSet {
-            print("dataSource")
-            setupButton()
+            print("didSetDataSource")
+            if dataSource != nil {
+                setupButton()
+            } else {
+                reloadData()
+            }
         }
     }
     
     weak var delegate: SelectionViewDelegate?
     
-    var currentIndex: Int = 0
+    var currentIndex = 0
     
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -95,51 +108,95 @@ class SelectionView: UIView {
     }
     
     func setupBaseView() {
-        self.addSubview(buttonStackView)
         
+        self.addSubview(buttonStackView)
         NSLayoutConstraint.activate([
-        self.topAnchor.constraint(equalTo: buttonStackView.topAnchor),
-        self.leftAnchor.constraint(equalTo: buttonStackView.leftAnchor),
-        self.rightAnchor.constraint(equalTo: buttonStackView.rightAnchor),
-        buttonStackView.heightAnchor.constraint(equalToConstant: self.frame.height - 2)])
+            self.topAnchor.constraint(equalTo: buttonStackView.topAnchor),
+            self.leftAnchor.constraint(equalTo: buttonStackView.leftAnchor),
+            self.rightAnchor.constraint(equalTo: buttonStackView.rightAnchor),
+            buttonStackView.heightAnchor.constraint(equalToConstant: self.frame.height)
+        ])
 
         self.addSubview(indicatorContainerView)
         NSLayoutConstraint.activate([
-            buttonStackView.bottomAnchor.constraint(equalTo: indicatorContainerView.topAnchor),
+            buttonStackView.bottomAnchor.constraint(equalTo: indicatorContainerView.bottomAnchor),
             self.leftAnchor.constraint(equalTo: indicatorContainerView.leftAnchor),
             self.rightAnchor.constraint(equalTo: indicatorContainerView.rightAnchor),
-            indicatorContainerView.heightAnchor.constraint(equalToConstant: 2)])
+            indicatorContainerView.heightAnchor.constraint(equalToConstant: 2)
+        ])
+        
     }
     
     func setupButton() {
+        
         guard let dataSource = dataSource else { return }
         
         indicatorView.backgroundColor = dataSource.indicatorColorOfSelectionButtons(selectionView: self)
 
         for index in 0..<dataSource.numberOfSelectionButtons(selectionView: self) {
             let button = UIButton()
+            
             button.tag = index
+            
             button.setTitle(dataSource.titleOfRowAt(selectionView: self, index: index), for: .normal)
+            
             button.titleLabel?.font = dataSource.fontOfSelectionButtons(selectionView: self)
+            
             button.setTitleColor(dataSource.titleColorOfSelectionButtons(selectionView: self), for: .normal)
+            
             button.backgroundColor = dataSource.backgroundColorOfSelectionButtons(selectionView: self)
+            
             button.addTarget(self, action: #selector(updataIndicatorPosition(_:)), for: .touchUpInside)
+            
             buttonStackView.addArrangedSubview(button)
         }
         
         indicatorContainerView.addSubview(indicatorView)
     }
     
+    func resetIndicatorPosition() {
+        
+        currentIndex = 0
+        
+        buttonStackView.layoutIfNeeded()
+        
+        if buttonStackView.subviews.count > 0 {
+            
+            guard let firstView = buttonStackView.subviews.first,
+                let btn = firstView as? UIButton,
+                let btnLabel = btn.titleLabel,
+                let text = btnLabel.text
+                else { return }
+            
+            let width = getSizeFromString(string: text, withFont: .systemFont(ofSize: 15)).width + 20
+            
+            indicatorView.frame = CGRect(x: btn.center.x - (width / 2), y: 0, width: width, height: 2)
+            
+            guard let delegate = delegate else { return }
+            
+            delegate.didSelectButton?(selectionView: self, index: 0)
+        }
+        
+    }
+    
+    func reloadData() {
+        
+        buttonStackView.subviews.forEach { $0.removeFromSuperview() }
+        
+        indicatorView.removeFromSuperview()
+        
+        setupButton()
+        
+        resetIndicatorPosition()
+    }
+    
     @objc func updataIndicatorPosition(_ button: UIButton) {
         
-        guard let delegate = delegate,
-            let shouldSelectButton = delegate.shouldSelectButton,
-            let didSelectButton = delegate.didSelectButton
-        else { return }
+        guard let delegate = delegate else { return }
         
-        if shouldSelectButton(self, button.tag) {
+        if delegate.shouldSelectButton?(selectionView: self, index: button.tag) == true {
             
-            didSelectButton(self, button.tag)
+            delegate.didSelectButton?(selectionView: self, index: button.tag)
             
             currentIndex = button.tag
             
@@ -153,37 +210,23 @@ class SelectionView: UIView {
                 
             }
         }
+        
     }
     
     func getSizeFromString(string: String, withFont font: UIFont) -> CGSize{
-        
-        let textSize = NSString(string: string ).size(
-    
-            withAttributes: [NSAttributedString.Key.font:font])
-        
+
+        let textSize = NSString(string: string).size(withAttributes: [NSAttributedString.Key.font: font])
         return textSize
+        
     }
     
-    
-    
     override func layoutSubviews() {
+        
         super.layoutSubviews()
         print("layoutSubviews")
         
-        buttonStackView.layoutIfNeeded()
+        resetIndicatorPosition()
         
-        if buttonStackView.subviews.count > 0 {
-            
-            guard let firstView = buttonStackView.subviews.first,
-                let btn = firstView as? UIButton,
-                let btnLabel = btn.titleLabel,
-                let text = btnLabel.text
-            else { return }
-            
-            let width = getSizeFromString(string: text, withFont: .systemFont(ofSize: 15)).width + 20
-            
-            indicatorView.frame = CGRect(x: btn.center.x - (width / 2), y: 0, width: width, height: 2)
-            
-        }
     }
+    
 }

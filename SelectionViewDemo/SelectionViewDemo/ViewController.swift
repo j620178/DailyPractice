@@ -15,9 +15,10 @@ struct ColorItem {
 
 class ViewController: UIViewController {
     
-    let topData = [
+    var topData = [
         ColorItem(name: "Red", color: .red),
         ColorItem(name: "Yellow", color: .yellow)]
+    
     let bottomData = [
         ColorItem(name: "Red", color: .red),
         ColorItem(name: "Yellow", color: .yellow),
@@ -30,12 +31,9 @@ class ViewController: UIViewController {
             topSelectionView.delegate = self
         }
     }
-    var topContent: UIView? {
-        didSet {
-            guard let topContent = topContent else { return }
-            topContent.backgroundColor = .red
-        }
-    }
+    
+    var topContent: UIView?
+    
     var bottomSelectionView: SelectionView? {
         didSet {
             guard let bottomSelectionView = bottomSelectionView else { return }
@@ -43,17 +41,22 @@ class ViewController: UIViewController {
             bottomSelectionView.delegate = self
         }
     }
-    var bottomContent: UIView? {
-        didSet {
-            guard let bottomContent = bottomContent else { return }
-            bottomContent.backgroundColor = .red
-        }
-    }
-    var buttomIsEnable = true
     
+    var bottomContent: UIView?
+    
+    let updateButton: UIButton = {
+        let btn = UIButton()
+        btn.translatesAutoresizingMaskIntoConstraints = false
+        btn.setTitle("ReloadData", for: .normal)
+        btn.setTitleColor(.white, for: .normal)
+        btn.addTarget(self, action: #selector(updateData(_:)), for: .touchUpInside)
+        return btn
+    }()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         print("viewDidLoad")
+        
         view.backgroundColor = .black
         
         topSelectionView = SelectionView(frame: CGRect(x: 0, y: 40, width: UIScreen.main.bounds.width, height: 45))
@@ -71,7 +74,23 @@ class ViewController: UIViewController {
         self.view.addSubview(topContent)
         self.view.addSubview(bottomSelectionView)
         self.view.addSubview(bottomContent)
+        
 
+        self.view.addSubview(updateButton)
+        updateButton.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        updateButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16).isActive = true
+    }
+    
+    @objc func updateData(_ button: UIButton) {
+        topData = [
+            ColorItem(name: "Red", color: .red),
+            ColorItem(name: "Yellow", color: .yellow),
+            ColorItem(name: "Purple", color: .purple)
+        ]
+        
+        //topSelectionView?.dataSource = nil
+        
+        topSelectionView?.reloadData()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -94,6 +113,7 @@ class ViewController: UIViewController {
         super.viewWillLayoutSubviews()
         print("viewWillLayoutSubviews")
     }
+    
 }
 
 extension ViewController: SelectionViewDataSource {
@@ -113,14 +133,13 @@ extension ViewController: SelectionViewDelegate {
     func didSelectButton(selectionView: SelectionView, index: Int) {
         if selectionView == topSelectionView {
             topContent?.backgroundColor = topData[index].color
-            buttomIsEnable = index == 0 ? true : false
         } else {
             bottomContent?.backgroundColor = bottomData[index].color
         }
     }
     
     func shouldSelectButton(selectionView: SelectionView, index: Int) -> Bool {
-        return selectionView == topSelectionView ? true : buttomIsEnable
+        return selectionView == topSelectionView ? true : (topSelectionView?.currentIndex == 0 ? true : false )
     }
 
 }
