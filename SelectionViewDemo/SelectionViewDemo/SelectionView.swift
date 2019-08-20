@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol SelectionViewDataSource: NSObject {
+protocol SelectionViewDataSource: AnyObject {
     
     func numberOfSelectionButtons(selectionView: SelectionView) -> Int
     
