@@ -122,11 +122,11 @@ extension MainViewController: UITableViewDataSource {
             itemCell.delegate = self
         case 2:
             itemCell.contentView.backgroundColor = .gray
-            itemCell.deletePassHelper = { cell in
+            itemCell.deletePassHelper = { [weak weakSelf = self] cell in
                 print("Delete by closure")
                 guard let indexPath = tableView.indexPath(for: cell) else { return }
-                self.data.remove(at: indexPath.row)
-                self.tableView.deleteRows(at: [indexPath], with: .fade)
+                weakSelf?.data.remove(at: indexPath.row)
+                weakSelf?.tableView.deleteRows(at: [indexPath], with: .fade)
             }
         default: break
         }

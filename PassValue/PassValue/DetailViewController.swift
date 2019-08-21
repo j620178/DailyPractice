@@ -8,7 +8,7 @@
 
 import UIKit
 
-protocol DataPassHelper {
+protocol DataPassHelper: AnyObject {
     func insertData(text: String)
     
     func updateData(text: String)
@@ -40,7 +40,7 @@ class DetailViewController: UIViewController {
         }
     }
         
-    var delegate: DataPassHelper?
+    weak var delegate: DataPassHelper?
     
     var insertDataHelper: ((String) -> Void)?
     
