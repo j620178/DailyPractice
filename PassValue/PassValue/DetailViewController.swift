@@ -11,7 +11,7 @@ import UIKit
 protocol DataPassHelper {
     func insertData(text: String)
     
-    func updateData(text: String, indexPath: IndexPath)
+    func updateData(text: String)
 }
 
 class DetailViewController: UIViewController {
@@ -34,19 +34,17 @@ class DetailViewController: UIViewController {
         return button
     }()
 
-    var data: String? {
+    var preloadData: String? {
         didSet{
-            textfidld.text = data
+            textfidld.text = preloadData
         }
     }
-    
-    var indexPath: IndexPath?
-    
+        
     var delegate: DataPassHelper?
     
     var insertDataHelper: ((String) -> Void)?
     
-    var updateDataHelper: ((String, IndexPath) -> Void)?
+    var updateDataHelper: ((String) -> Void)?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -81,15 +79,14 @@ class DetailViewController: UIViewController {
 
         guard let text = textfidld.text else { return }
         
-        if indexPath == nil {
+        if preloadData == nil {
             print("Insert by delegate")
             //delegate?.insertResult(text: text)
             insertDataHelper?(text)
         } else {
             print("Update by closure")
-            guard let indexPath = indexPath else { return }
-            delegate?.updateData(text: text, indexPath: indexPath)
-            //updateDataHelper(text: text, indexPath: indexPath)
+            delegate?.updateData(text: text)
+            //updateDataHelper(text: text)
         }
 
         navigationController?.popViewController(animated: true)

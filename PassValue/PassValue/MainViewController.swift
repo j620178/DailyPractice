@@ -23,8 +23,13 @@ class MainViewController: UIViewController {
         }
     }
     
+    var updateIndexPath: IndexPath?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        let item1 = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(clickAddutton(_:)))
+        self.navigationItem.rightBarButtonItem = item1
                 
         view.addSubview(tableView)
         tableView.delegate = self
@@ -37,6 +42,26 @@ class MainViewController: UIViewController {
             view.bottomAnchor.constraint(equalTo: tableView.bottomAnchor)
         ])
 
+    }
+    
+    @objc func clickAddutton(_ button: UIButton) {
+        
+        guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController
+        else { return }
+        
+        nextVC.insertDataHelper = { [weak self] text in
+            
+            guard let strongSelf = self else { return }
+            
+            strongSelf.data.append(text)
+            
+            strongSelf.tableView.beginUpdates()
+            strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.data.count - 1, section: 0)], with: .automatic)
+            strongSelf.tableView.endUpdates()
+        }
+        
+        navigationController?.pushViewController(nextVC, animated: true)
+        
     }
     
     @objc func clickDeleteButton(_ button: UIButton) {
@@ -70,21 +95,6 @@ class MainViewController: UIViewController {
             
         } while view.superview != nil
         
-    }
-    
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        guard let nextVC = segue.destination as? DetailViewController else { return }
-        
-        nextVC.insertDataHelper = { [weak self] text in
-            
-            guard let strongSelf = self else { return }
-            
-            strongSelf.data.append(text)
-
-            strongSelf.tableView.beginUpdates()
-            strongSelf.tableView.insertRows(at: [IndexPath(row: strongSelf.data.count - 1, section: 0)], with: .automatic)
-            strongSelf.tableView.endUpdates()
-        }
     }
 
 }
@@ -122,10 +132,21 @@ extension MainViewController: UITableViewDataSource {
 extension MainViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "DetailViewController") as? DetailViewController else { return }
-        nextVC.data = data[indexPath.row]
-        nextVC.indexPath = indexPath
+        guard let nextVC = storyboard?.instantiateViewController(withIdentifier: String(describing: DetailViewController.self)) as? DetailViewController
+        else { return }
+        
+        updateIndexPath = indexPath
+        
         nextVC.delegate = self
+        nextVC.preloadData = data[indexPath.row]
+        
+        nextVC.updateDataHelper = { [weak self] text in
+            
+            guard let strongSelf = self else { return }
+            strongSelf.data[indexPath.row] = text
+            tableView.reloadRows(at: [indexPath], with: .automatic)
+        }
+        
         navigationController?.pushViewController(nextVC, animated: true)
     }
     
@@ -141,11 +162,15 @@ extension MainViewController: DataPassHelper {
         tableView.endUpdates()
     }
     
-    func updateData(text: String, indexPath: IndexPath) {
-
-        self.data[indexPath.row] = text
+    func updateData(text: String) {
         
-        tableView.reloadRows(at: [indexPath], with: .automatic)
+        guard let updateIndexPath = updateIndexPath else { return }
+
+        self.data[updateIndexPath.row] = text
+        
+        tableView.reloadRows(at: [updateIndexPath], with: .automatic)
+        
+        self.updateIndexPath = nil
     }
 }
 
@@ -157,7 +182,7 @@ extension MainViewController: DeleteHelper {
         
         guard let indexPath = tableView.indexPath(for: cell) else { return }
         data.remove(at: indexPath.row)
-        tableView.deleteRows(at: [indexPath], with: .fade)
+        tableView.deleteRows(at: [indexPath], with: .automatic)
 
     }
 }

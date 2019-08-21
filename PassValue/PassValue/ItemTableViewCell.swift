@@ -65,6 +65,7 @@ class ItemTableViewCell: UITableViewCell {
     }
     
     override func layoutSubviews() {
+        
         super.layoutSubviews()
         
         deleteButton.layoutIfNeeded()
@@ -82,8 +83,10 @@ class ItemTableViewCell: UITableViewCell {
     }
     
     @objc func clickDeleteButton(_ button: UIButton) {
+        
         deletePassHelper?(self)
         delegate?.deleteData(cell: self)
+        
     }
     
 }

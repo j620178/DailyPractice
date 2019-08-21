@@ -22,11 +22,6 @@
                     </view>
                     <navigationItem key="navigationItem" id="565-Se-B31">
                         <barButtonItem key="backBarButtonItem" title=" " id="Z6S-g1-ia2"/>
-                        <barButtonItem key="rightBarButtonItem" systemItem="add" id="KTd-Tp-7Lp">
-                            <connections>
-                                <segue destination="LEu-6i-qDa" kind="show" id="gfj-cO-tIm"/>
-                            </connections>
-                        </barButtonItem>
                     </navigationItem>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
