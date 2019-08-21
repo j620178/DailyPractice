@@ -88,4 +88,8 @@ class ItemTableViewCell: UITableViewCell {
         
     }
     
+    deinit {
+        print("ItemTableViewCell deinit")
+    }
+    
 }
