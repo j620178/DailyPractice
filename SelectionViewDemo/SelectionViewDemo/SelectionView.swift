@@ -229,4 +229,8 @@ class SelectionView: UIView {
         
     }
     
+    deinit {
+        print("SelectionView deinit")
+    }
+    
 }

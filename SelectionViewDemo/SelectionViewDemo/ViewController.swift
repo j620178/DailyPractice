@@ -59,10 +59,10 @@ class ViewController: UIViewController {
         
         view.backgroundColor = .black
         
-        topSelectionView = SelectionView(frame: CGRect(x: 0, y: 40, width: UIScreen.main.bounds.width, height: 45))
-        topContent = UIView(frame: CGRect(x: 0, y: 85, width: UIScreen.main.bounds.width, height: 100))
-        bottomSelectionView = SelectionView(frame: CGRect(x: 0, y: 185, width: UIScreen.main.bounds.width, height: 45))
-        bottomContent = UIView(frame: CGRect(x: 0, y: 230, width: UIScreen.main.bounds.width, height: 100))
+        topSelectionView = SelectionView(frame: CGRect(x: 0, y: 80, width: UIScreen.main.bounds.width, height: 45))
+        topContent = UIView(frame: CGRect(x: 0, y: 125, width: UIScreen.main.bounds.width, height: 100))
+        bottomSelectionView = SelectionView(frame: CGRect(x: 0, y: 225, width: UIScreen.main.bounds.width, height: 45))
+        bottomContent = UIView(frame: CGRect(x: 0, y: 270, width: UIScreen.main.bounds.width, height: 100))
         
         guard let topSelectionView = topSelectionView,
             let topContent = topContent,
@@ -112,6 +112,10 @@ class ViewController: UIViewController {
     override func viewWillLayoutSubviews() {
         super.viewWillLayoutSubviews()
         print("viewWillLayoutSubviews")
+    }
+    
+    deinit {
+        print("ViewController deinit")
     }
     
 }

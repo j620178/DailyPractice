@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		742AE29E230D70F5008D6B07 /* MainViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 742AE29D230D70F5008D6B07 /* MainViewController.swift */; };
 		74F1D53A230A3E9F0045DA94 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74F1D539230A3E9F0045DA94 /* AppDelegate.swift */; };
 		74F1D53C230A3E9F0045DA94 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 74F1D53B230A3E9F0045DA94 /* ViewController.swift */; };
 		74F1D53F230A3E9F0045DA94 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 74F1D53D230A3E9F0045DA94 /* Main.storyboard */; };
@@ -16,6 +17,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		742AE29D230D70F5008D6B07 /* MainViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewController.swift; sourceTree = "<group>"; };
 		74F1D536230A3E9F0045DA94 /* SelectionViewDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SelectionViewDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		74F1D539230A3E9F0045DA94 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		74F1D53B230A3E9F0045DA94 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -60,6 +62,7 @@
 				74F1D53B230A3E9F0045DA94 /* ViewController.swift */,
 				74F1D54B230A3FF30045DA94 /* SelectionView.swift */,
 				74F1D53D230A3E9F0045DA94 /* Main.storyboard */,
+				742AE29D230D70F5008D6B07 /* MainViewController.swift */,
 				74F1D540230A3EA30045DA94 /* Assets.xcassets */,
 				74F1D542230A3EA30045DA94 /* LaunchScreen.storyboard */,
 				74F1D545230A3EA30045DA94 /* Info.plist */,
@@ -141,6 +144,7 @@
 				74F1D53C230A3E9F0045DA94 /* ViewController.swift in Sources */,
 				74F1D53A230A3E9F0045DA94 /* AppDelegate.swift in Sources */,
 				74F1D54C230A3FF30045DA94 /* SelectionView.swift in Sources */,
+				742AE29E230D70F5008D6B07 /* MainViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
