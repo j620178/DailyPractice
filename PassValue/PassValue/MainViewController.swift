@@ -111,10 +111,17 @@ extension MainViewController: UITableViewDataSource {
         
         guard let itemCell = cell as? ItemTableViewCell else { return cell }
         
+        print(indexPath.row % 3)
+        
         switch indexPath.row % 3 {
-        case 0: itemCell.deleteButton.addTarget(self, action: #selector(clickDeleteButton(_:)), for: .touchUpInside)
-        case 1: itemCell.delegate = self
+        case 0:
+            itemCell.contentView.backgroundColor = .white
+            itemCell.deleteButton.addTarget(self, action: #selector(clickDeleteButton(_:)), for: .touchUpInside)
+        case 1:
+            itemCell.contentView.backgroundColor = .lightGray
+            itemCell.delegate = self
         case 2:
+            itemCell.contentView.backgroundColor = .gray
             itemCell.deletePassHelper = { cell in
                 print("Delete by closure")
                 guard let indexPath = tableView.indexPath(for: cell) else { return }

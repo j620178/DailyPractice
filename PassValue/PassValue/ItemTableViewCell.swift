@@ -30,13 +30,11 @@ class ItemTableViewCell: UITableViewCell {
     var deletePassHelper: ((UITableViewCell) -> Void)? {
         didSet {
             deleteButton.addTarget(self, action: #selector(clickDeleteButton(_:)), for: .touchUpInside)
-            contentView.backgroundColor = .gray
         }
     }
     var delegate: DeleteHelper? {
         didSet {
             deleteButton.addTarget(self, action: #selector(clickDeleteButton(_:)), for: .touchUpInside)
-            contentView.backgroundColor = .lightGray
         }
     }
 
@@ -47,6 +45,7 @@ class ItemTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
+    
         contentView.addSubview(deleteButton)
         
         contentView.topAnchor.constraint(equalTo: deleteButton.topAnchor, constant: -10).isActive = true
