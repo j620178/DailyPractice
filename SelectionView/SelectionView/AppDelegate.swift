@@ -1,8 +1,8 @@
 //
 //  AppDelegate.swift
-//  SelectionViewDemo
+//  SelectionView
 //
-//  Created by littlema on 2019/8/19.
+//  Created by littlema on 2019/8/22.
 //  Copyright © 2019 littema. All rights reserved.
 //
 

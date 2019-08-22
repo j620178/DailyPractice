@@ -35,8 +35,8 @@ class NextViewController: UIViewController {
 
     @objc func popButton(_ button: UIButton) {
         
-        let VC = self.navigationController!.viewControllers[0] as! ViewController
-        VC.passHandler = { [weak self] text in
+        let vc = self.navigationController!.viewControllers[0] as! ViewController
+        vc.passHandler = { [weak self] text in
             self?.textData = text
         }
         self.navigationController!.popViewController(animated: true)

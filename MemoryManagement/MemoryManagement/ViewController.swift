@@ -26,6 +26,9 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        nextVC = storyboard?.instantiateViewController(withIdentifier: "NextViewController") as? NextViewController
+        nextVC?.delegate = self
+        
         let rightBarItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(clickRightItemButton))
         navigationItem.rightBarButtonItem = rightBarItem
         
@@ -43,21 +46,18 @@ class ViewController: UIViewController {
     }
     
     @objc func clickRightItemButton(_ button: UIButton) {
-        guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "NextViewController") as? NextViewController else { return }
-        nextVC.delegate = self
+        guard let nextVC = nextVC else { return }
         navigationController?.pushViewController(nextVC, animated: true)
     }
     
     @objc func clickleftItemButton(_ button: UIButton) {
-        guard let nextVC = storyboard?.instantiateViewController(withIdentifier: "NextViewController") as? NextViewController else { return }
-        
+        guard let nextVC = nextVC else { return }
         navigationController?.pushViewController(nextVC, animated: true)
     }
     
     @objc func clickClearButton(_ button: UIButton) {
         if nextVC == nil {
             print("I'm dead")
-            print(nextVC)
         } else {
             print("I'm alive")
             print("RetainCount: \(CFGetRetainCount(nextVC))")
