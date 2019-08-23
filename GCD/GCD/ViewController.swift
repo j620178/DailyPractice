@@ -35,6 +35,8 @@ class ViewController: UIViewController {
         return button
     }()
     
+    var currentRegion: MKCoordinateRegion?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -79,6 +81,7 @@ class ViewController: UIViewController {
         
         let center = CLLocation(latitude: 25.047342, longitude: 121.549285)
         let currentRegion = MKCoordinateRegion(center: center.coordinate, span: currentLocationSpan)
+        self.currentRegion = currentRegion
         mapView.setRegion(currentRegion, animated: true)
         
         view.addSubview(mapView)
@@ -97,7 +100,9 @@ class ViewController: UIViewController {
         for index in 0...2 {
             group.enter()
             queue1.async(group: group) { [weak self] in
+                print("getData")
                 self?.getData(offset: index * 5, completion: { (address, speedLimit) in
+                    print("getPosition")
                     self?.getPosition(text: address) { placemark in
                         let annotation = MKPointAnnotation()
                         annotation.title = speedLimit
@@ -129,17 +134,19 @@ class ViewController: UIViewController {
         
         for index in 0...2 {
             queue2.async {
+                print("getData")
                 self.getData(offset: index * 5, completion: { [weak self] (address, speedLimit) in
+                    print("getPosition")
                     self?.getPosition(text: address) { placemark in
-                        if semaphore.wait(timeout: .distantFuture) == .success {
-                            let annotation = MKPointAnnotation()
-                            annotation.title = speedLimit
-                            annotation.subtitle = placemark.name
-                            if let location = placemark.location {
-                                annotation.coordinate = location.coordinate
-                                self?.mapView.addAnnotation(annotation)
-                                semaphore.signal()
-                            }
+                        // if semaphore.wait(timeout: .distantFuture) == .success { ... }
+                        semaphore.wait()
+                        let annotation = MKPointAnnotation()
+                        annotation.title = speedLimit
+                        annotation.subtitle = placemark.name
+                        if let location = placemark.location {
+                            annotation.coordinate = location.coordinate
+                            self?.mapView.addAnnotation(annotation)
+                            semaphore.signal()
                         }
                     }
                 })
@@ -191,15 +198,19 @@ class ViewController: UIViewController {
     }
     
     func getPosition(text: String, completion: @escaping (CLPlacemark) -> Void) {
-        
-        CLGeocoder().geocodeAddressString(text, in: nil, preferredLocale: Locale(identifier: "zh_TW"), completionHandler: { placemarks, error in
+        let geofenceRegion = CLCircularRegion(center: currentRegion!.center, radius: 400, identifier: "PlayaGrande")
+        CLGeocoder().geocodeAddressString(text, in: geofenceRegion, completionHandler: { placemarks, error in
+            print("CLGeocoder")
+            
             if (error != nil) {
+                print(error)
                 return
             }
             
-            print("placemarks \(placemarks)")
+            //print("placemarks \(placemarks)")
             
             if let placemark = placemarks?[0]  {
+                print(placemark.name)
                 completion(placemark)
             }
         })
@@ -232,14 +243,16 @@ class ViewController: UIViewController {
 
 extension ViewController: CLLocationManagerDelegate {
     
-//    func locationManager(_ manager: CLLocationManager,
-//                         didUpdateLocations locations: [CLLocation]) {
+//    func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
+//        if annotation is MKUserLocation {
+//            return nil
+//        }
+//    }
+    
+//    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
 //        // 印出目前所在位置座標
-//        let currentLocation :CLLocation =
-//            locations[0] as CLLocation
-//        print("\(currentLocation.coordinate.latitude)")
-//        print(", \(currentLocation.coordinate.longitude)")
-//        
+//        let currentLocation = locations[0] as CLLocation
+//        print("\(currentLocation.coordinate.latitude), \(currentLocation.coordinate.longitude)")
 //    }
     
 }
